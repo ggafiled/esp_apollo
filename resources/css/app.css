@@ -1,0 +1,6 @@
+@import "~datatables.net-jqui/css/dataTables.jqueryui.min.css";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@import '~vuetify/dist/vuetify.min.css';
+
