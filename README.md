@@ -24,6 +24,13 @@
 - Developer Options for OAuth Clients and Personal Access Token
 - Build with Docker
 
+![Preview](https://raw.githubusercontent.com/ggafiled/vue-laravel-starter/main/public/images/dashboard.png)
+![Preview](https://raw.githubusercontent.com/ggafiled/vue-laravel-starter/main/public/images/console.png)
+![Preview](https://raw.githubusercontent.com/ggafiled/vue-laravel-starter/main/public/images/role.png)
+![Preview](https://raw.githubusercontent.com/ggafiled/vue-laravel-starter/main/public/images/user.png)
+![Preview](https://raw.githubusercontent.com/ggafiled/vue-laravel-starter/main/public/images/users.png)
+![Preview](https://raw.githubusercontent.com/ggafiled/vue-laravel-starter/main/public/images/waite.png)
+
 ## Installation
 
 -   `git clone https://github.com/AnowarCST/vue-laravel-starter.git`
