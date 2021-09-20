@@ -280,7 +280,7 @@ return [
         [
             'text' => 'user_management',
             'url' => '/users',
-            'icon' => 'bi bi-people',
+            'icon' => 'bi bi-person',
             'roles' => ['superadministrator', 'administrator'],
         ],
     ],

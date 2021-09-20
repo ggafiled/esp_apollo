@@ -4,6 +4,7 @@
 - Vue 2 + VueRouter + vue-progressbar + sweetalert2 + laravel-vue-pagination
 - Schedular Service
 - Laravel Passport
+- Laravel laravolt/avatar
 - Laravel mpociot/teamwork
 - Laravel spatie/laravel-activitylog
 - Laravel santigarcor/laratrust

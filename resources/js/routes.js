@@ -1,13 +1,13 @@
 export default [{
         path: "/dashboard",
-        component: require("./components/Dashboard.vue").default,
+        component: require("./pages/Dashboard.vue").default,
         meta: {
             requiresAuth: true
         }
     },
     {
         path: "/console-log",
-        component: require("./components/consolelog/ConsoleLog.vue").default,
+        component: require("./pages/consolelog/ConsoleLog.vue").default,
         meta: {
             requiresAuth: true,
             roles: ["superadministrator", "administrator"]
@@ -15,7 +15,7 @@ export default [{
     },
     {
         path: "/profile",
-        component: require("./components/Profile.vue").default,
+        component: require("./pages/Profile.vue").default,
         meta: {
             requiresAuth: true,
             permissions: ["profile-read", "profile-update"]
@@ -23,7 +23,7 @@ export default [{
     },
     {
         path: "/users",
-        component: require("./components/Users.vue").default,
+        component: require("./pages/Users.vue").default,
         meta: {
             requiresAuth: true,
             roles: ["superadministrator", "administrator"]
@@ -31,11 +31,11 @@ export default [{
     },
     {
         path: "/permission",
-        component: require("./components/Permission.vue").default,
+        component: require("./pages/Permission.vue").default,
         meta: {
             requiresAuth: true,
             roles: ["superadministrator", "administrator"]
         }
     },
-    { path: "*", component: require("./components/NotFound.vue").default }
+    { path: "*", component: require("./pages/NotFound.vue").default }
 ];

@@ -94,6 +94,9 @@ Vue.use(VueProgressBar, {
     height: "3px"
 });
 
+import DataTable from "./components/datatable/DataTable.vue";
+Vue.component("data-tables", DataTable);
+
 Vue.component(HasError.name, HasError);
 Vue.component(AlertError.name, AlertError);
 
@@ -152,8 +155,6 @@ router.beforeEach((to, from, next) => {
 
 // Components
 Vue.component("pagination", require("laravel-vue-pagination"));
-Vue.component("dashboard", require("./components/Dashboard.vue"));
-// Vue.component("building", require("./components/Building.vue"));
 
 Vue.component(
     "passport-clients",
@@ -177,7 +178,7 @@ Vue.component(
     require("./components/partials/WindowPortal.vue").default
 );
 
-Vue.component("not-found", require("./components/NotFound.vue").default);
+Vue.component("not-found", require("./pages/NotFound.vue").default);
 
 // Filter Section
 
