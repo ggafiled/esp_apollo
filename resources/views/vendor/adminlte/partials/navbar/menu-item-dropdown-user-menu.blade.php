@@ -16,15 +16,20 @@
 <li class="nav-item dropdown user-menu">
 
     {{-- User menu toggler --}}
-    <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">
-        @if(config('adminlte.usermenu_image'))
+    <a href="#" class="nav-link dropdown-toggle p-md-0 m-md-0 ml-md-2 mb-md-1" data-toggle="dropdown">
+        <div class="d-inline-flex justify-content-md-center align-items-md-center justify-content-md-around p-md-0 mb-md-1">
+            @if(config('adminlte.usermenu_image'))
             <img src="{{ Auth::user()->adminlte_image() }}"
-                 class="user-image img-circle elevation-2"
+                 class="user-image rounded elevation-1 p-md-0 m-md-0 mr-md-2"
                  alt="{{ Auth::user()->name }}">
-        @endif
-        <span @if(config('adminlte.usermenu_image')) class="d-none d-md-inline" @endif>
-            {{ Auth::user()->name }}
-        </span>
+            @endif
+            <div @if(config('adminlte.usermenu_image')) class="d-none d-md-flex p-0 m-0 flex-column justify-content-center align-items-center" @endif>
+                <span class="p-0 m-0">{{ mb_strimwidth(Auth::user()->name,0,20,'...') }}</span>
+                @php( $user_email = explode("@",Auth::user()->email) )
+                @php( $user_email_limit = mb_strimwidth($user_email[0],0,30,"...")."@".$user_email[1])
+                <small class="text-muted p-0 m-0">{{ $user_email_limit }}</small>
+            </div>
+        </div>
     </a>
 
     {{-- User menu dropdown --}}

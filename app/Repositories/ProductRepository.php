@@ -150,7 +150,7 @@ class ProductRepository implements ProductRepositoryInterface
 
     /**
      * On method call
-     * To use Eloquent Methods which are not exist on repository 
+     * To use Eloquent Methods which are not exist on repository
      *  Example Eloquent findOrFail() method
      *
      * @param $method

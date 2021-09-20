@@ -18,7 +18,7 @@ class MatchOldPassword implements Rule
     {
         return Hash::check($value, auth('api')->user()->password);
     }
-   
+
     /**
      * Get the validation error message.
      *

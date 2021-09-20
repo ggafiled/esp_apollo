@@ -16574,7 +16574,7 @@ body.text-sm .control-sidebar {
 }
 
 .navbar-nav>.user-menu .user-image {
-    border-radius: 50%;
+    /* border-radius: 50%; */
     float: left;
     height: 2.1rem;
     margin-right: 10px;
