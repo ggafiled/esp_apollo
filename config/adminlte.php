@@ -14,7 +14,7 @@ return [
     |
      */
 
-    'title' => 'Starter Project',
+    'title' => env('APP_NAME'),
     'title_prefix' => '',
     'title_postfix' => '',
 
@@ -45,7 +45,7 @@ return [
     |
      */
 
-    'logo' => '<b>Starter Project </b>',
+    'logo' => env('APP_NAME'),
     'logo_img' => '/images/logo.png',
     'logo_img_class' => 'brand-image img-circle elevation-3',
     'logo_img_xl' => null,
@@ -257,6 +257,11 @@ return [
             'text' => 'dashboard',
             'url' => '/dashboard',
             'icon' => 'fas fa-fw bi bi-kanban',
+        ],
+        [
+            'text' => 'statistic',
+            'url' => '/statistic',
+            'icon' => 'fas fa-fw bi bi-bar-chart-line',
         ],
         [
             'text' => 'console_log',

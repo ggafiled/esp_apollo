@@ -20,6 +20,8 @@
         "laravel/ui": "^3.1",
         "laravolt/avatar": "^4.1",
         "lcobucci/jwt": "^3.4",
+        "league/flysystem-aws-s3-v3": "^1.0",
+        "league/flysystem-cached-adapter": "~1.0",
         "mpociot/teamwork": "^6.1",
         "pusher/pusher-php-server": "^6.0",
         "santigarcor/laratrust": "^6.3",

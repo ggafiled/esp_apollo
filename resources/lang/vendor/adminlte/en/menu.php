@@ -21,6 +21,7 @@ return [
     'global_search'                 => 'Global search',
     'search'                        => 'Search',
     'dashboard'                     => 'Dashboard',
+    'statistic'                     => 'Statistic',
     'user'                          => 'USER',
     'user_information'              => 'User Information',
     'user_role_permission'          => 'User Role & Permission',

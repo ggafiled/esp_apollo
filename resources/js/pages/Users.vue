@@ -304,8 +304,6 @@ export default {
       user.role = user.roles[0].id;
       user.account_status =
         user.deleted_at == null || user.deleted_at == "" ? 1 : 2;
-      console.log("Editing data");
-      console.log(user);
       this.form.fill(user);
     },
     newModal() {

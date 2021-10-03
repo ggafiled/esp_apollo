@@ -20,6 +20,7 @@ return [
     'global_search'                 => 'อยากค้นหาอะไร ?',
     'search'                        => 'ค้นหา',
     'dashboard'                     => 'แผงควบคุมหลัก',
+    'statistic'                     => 'สถิติการใช้งาน',
     'user'                          => 'ผู้ใช้งาน',
     'user_information'              => 'ข้อมูลโปรไฟล์',
     'user_role_permission'          => 'บทบาท & สิทธิ์การเข้าใช้งาน',

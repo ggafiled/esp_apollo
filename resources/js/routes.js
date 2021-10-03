@@ -6,6 +6,13 @@ export default [{
         }
     },
     {
+        path: "/statistic",
+        component: require("./pages/Statistic.vue").default,
+        meta: {
+            requiresAuth: true
+        }
+    },
+    {
         path: "/console-log",
         component: require("./pages/consolelog/ConsoleLog.vue").default,
         meta: {

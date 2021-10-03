@@ -11,7 +11,6 @@ window.axios = require("axios");
 const { shortText } = require("limit-text-js");
 window.shortText = shortText;
 window.translate = require("./VueTranslation/Translation").default.translate;
-import moment from "moment";
 
 import { Form, HasError, AlertError } from "vform";
 window.Form = Form;
@@ -21,6 +20,9 @@ var gate = new Gate("user" in window.Laravel ? window.Laravel.user : []);
 Vue.prototype.$gate = gate;
 
 Vue.prototype.$shortText = shortText;
+
+import moment from "moment";
+Vue.prototype.moment = moment;
 
 // If you want to use it in your vue components
 Vue.prototype.translate = require("./VueTranslation/Translation").default.translate;
@@ -94,6 +96,9 @@ Vue.use(VueProgressBar, {
     height: "3px"
 });
 
+import Vuetable from "vuetable-2";
+Vue.component("vuetable", Vuetable);
+
 import DataTable from "./components/datatable/DataTable.vue";
 Vue.component("data-tables", DataTable);
 
@@ -104,11 +109,17 @@ Vue.component(AlertError.name, AlertError);
 // หากจะใช้ก็แค่เพิ่ม attribute : active_url ในไฟล์ adminlte.config โดยใส่เป็น path เริ่มต้นที่จะให้แมทช์
 Vue.directive("active-when", {
     bind(el, binding, vnode) {
-        // console.log(binding.expression);
+        console.log(binding.expression);
         var regexActiveRoute = new RegExp(
-            "/([/]?" + binding.expression + "[/]?([A-Z0-9]*)?)/"
+            "[/]?" +
+            binding.expression.replace(/\//g, "\\/") +
+            "([-a - zA - Z0 - 9() @: % _ + .~# ? & //=]*)"
         );
-        if (regexActiveRoute.test(window.location.pathname)) {
+        if (
+            regexActiveRoute.test(
+                window.location.pathname + window.location.search
+            )
+        ) {
             // console.log(el);
             $(el).addClass("router-link-exact-active");
         }
