@@ -9,10 +9,15 @@ class Provider extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['user_id', 'provider_name'];
+    protected $fillable = ['id','user_id', 'provider_key', 'provider_secret_key', 'releases_current_version', 'provider_name'];
 
     public function user()
     {
         return $this->belongsTo('App\Models\User', 'id', 'user_id');
+    }
+
+    public function releases()
+    {
+        return $this->hasMany('App\Models\Release', 'provider_id', 'id');
     }
 }

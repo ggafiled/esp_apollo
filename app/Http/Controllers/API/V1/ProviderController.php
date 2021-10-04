@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers\API\V1;
 
-use App\Models\User;
 use App\Models\Provider;
+use App\Models\Release;
+use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -25,7 +26,25 @@ class ProviderController extends BaseController
     public function index()
     {
         try {
-            $user_provider = Provider::where('user_id',Auth::id())->orderby('created_at', 'DESC')->get();
+            $user_provider = Provider::where('user_id', Auth::id())->orderby('created_at', 'DESC')->with('releases')->withCount('releases')->get();
+            return $this->sendResponse($user_provider, trans('actions.get.success'));
+        } catch (ValidationException $ex) {
+            return $this->sendError([], $ex->getMessage());
+        } catch (Exception $ex) {
+            return $this->sendError([], trans('actions.get.failed'));
+        }
+    }
+
+    /**
+     * Show the profile for a given user.
+     *
+     * @param  int  $id
+     * @return \Illuminate\View\View
+     */
+    public function show($id)
+    {
+        try {
+            $user_provider = Provider::where('user_id', Auth::id())->where('provider_key', $id)->orderby('created_at', 'DESC')->with('releases')->withCount('releases')->first();
             return $this->sendResponse($user_provider, trans('actions.get.success'));
         } catch (ValidationException $ex) {
             return $this->sendError([], $ex->getMessage());
@@ -54,7 +73,7 @@ class ProviderController extends BaseController
         } catch (ValidationException $ex) {
             return $this->sendError([], $ex->getMessage());
         } catch (Exception $ex) {
-            return $this->sendError([], trans('actions.created.failed'));
+            return $this->sendError($ex, trans('actions.created.failed'));
         }
     }
 
@@ -92,6 +111,7 @@ class ProviderController extends BaseController
     public function destroy($id)
     {
         try {
+            Release::where('provider_id', $id)->delete();
             $user_provider = User::findOrFail(Auth::id())->providers()->findOrFail($id)->delete();
             return $this->sendResponse($user_provider, trans('actions.destroy.success'));
         } catch (ValidationException $ex) {

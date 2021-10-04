@@ -79,6 +79,10 @@ Vue.use(ColorPicker);
 import ThailandAutoComplete from "vue-thailand-address-autocomplete";
 Vue.component("ThailandAutoComplete", ThailandAutoComplete);
 
+import VueFileAgent from "vue-file-agent";
+import VueFileAgentStyles from "vue-file-agent/dist/vue-file-agent.css";
+Vue.use(VueFileAgent);
+
 /**
  * Custom mixins function to rename title.
  */

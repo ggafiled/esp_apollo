@@ -113,6 +113,7 @@
         "v-select2-component": "^0.4.7",
         "vform": "^1.0.1",
         "vue-chartjs": "^3.5.1",
+        "vue-file-agent": "^1.7.3",
         "vue-loading-overlay": "^3.0.1",
         "vue-loading-skeleton": "^1.1.9",
         "vue-meta": "^2.4.0",

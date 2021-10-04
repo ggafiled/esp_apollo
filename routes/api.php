@@ -32,6 +32,7 @@ Route::namespace('App\\Http\\Controllers\\API\V1')->group(function () {
     Route::get('permission/list', 'PermissionController@list');
 
     Route::apiResources([
+        'release' => 'ReleaseController',
         'provider' => 'ProviderController',
         'user' => 'UserController',
         'role' => 'RoleController',

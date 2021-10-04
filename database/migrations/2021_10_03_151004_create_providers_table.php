@@ -15,8 +15,9 @@ class CreateProvidersTable extends Migration
     {
         Schema::create('providers', function (Blueprint $table) {
             $table->id();
-            $table->string('provider_key');
-            $table->string('provider_secret_key');
+            $table->string('provider_key')->nullable();
+            $table->string('provider_secret_key')->nullable();
+            $table->bigInteger('releases_current_version')->unsigned()->nullable();
             $table->bigInteger('user_id')->unsigned();
             $table->string('provider_name');
             $table->timestamps();

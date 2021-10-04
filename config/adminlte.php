@@ -257,6 +257,7 @@ return [
             'text' => 'dashboard',
             'url' => '/dashboard',
             'icon' => 'fas fa-fw bi bi-kanban',
+            'active_url' => 'dashboard'
         ],
         [
             'text' => 'statistic',
