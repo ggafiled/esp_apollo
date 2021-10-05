@@ -29,9 +29,9 @@
 
 ![Preview](https://raw.githubusercontent.com/ggafiled/esp_apollo/main/public/images/dashboard.png)
 ![Preview](https://raw.githubusercontent.com/ggafiled/esp_apollo/main/public/images/dashboard01.PNG)
-![Preview](https://raw.githubusercontent.com/ggafiled/esp_apollo/main/public/images/dashboard01.PNG)
-![Preview](https://raw.githubusercontent.com/ggafiled/esp_apollo/main/public/images/dashboard01.PNG)
-![Preview](https://raw.githubusercontent.com/ggafiled/esp_apollo/main/public/images/dashboard01.PNG)
+![Preview](https://raw.githubusercontent.com/ggafiled/esp_apollo/main/public/images/dashboard02.PNG)
+![Preview](https://raw.githubusercontent.com/ggafiled/esp_apollo/main/public/images/dashboard03.PNG)
+![Preview](https://raw.githubusercontent.com/ggafiled/esp_apollo/main/public/images/dashboard04.PNG)
 ![Preview](https://raw.githubusercontent.com/ggafiled/esp_apollo/main/public/images/console.png)
 ![Preview](https://raw.githubusercontent.com/ggafiled/esp_apollo/main/public/images/role.png)
 ![Preview](https://raw.githubusercontent.com/ggafiled/esp_apollo/main/public/images/user.png)
