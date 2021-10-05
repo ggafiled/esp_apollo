@@ -72,6 +72,19 @@
                                                                 class="text-muted mb-0"
                                                             >
                                                                 ESP32, ESP8266
+                                                                <span
+                                                                    v-if="
+                                                                        item.current_version
+                                                                    "
+                                                                >
+                                                                    <i
+                                                                        class="bi bi-broadcast ml-1"
+                                                                    ></i>
+                                                                    {{
+                                                                        item.current_version.releases_name.toUpperCase() ||
+                                                                            ""
+                                                                    }}
+                                                                </span>
                                                             </p>
                                                         </div>
                                                     </div>
@@ -128,7 +141,7 @@
                                                             ></i>
                                                         </a>
                                                         <div
-                                                            class="dropdown-menu"
+                                                            class="dropdown-menu dropdown-menu-right"
                                                             aria-labelledby="triggerId1"
                                                         >
                                                             <div
@@ -284,7 +297,15 @@
                                                                     }}
                                                                 </h5>
                                                                 <p
-                                                                    class="text-muted mb-0"
+                                                                    class="mb-0"
+                                                                    :class="{
+                                                                        'text-success':
+                                                                            currentProviderEdit.releases_current_version ==
+                                                                            item.id,
+                                                                        'text-muted':
+                                                                            currentProviderEdit.releases_current_version !=
+                                                                            item.id
+                                                                    }"
                                                                 >
                                                                     ESP32,
                                                                     ESP8266
@@ -293,10 +314,18 @@
                                                         </div>
                                                     </td>
                                                     <td>
-                                                        {{ item.file }}
+                                                        <span
+                                                            class="text-wrap"
+                                                            >{{
+                                                                item.file
+                                                            }}</span
+                                                        >
                                                     </td>
                                                     <td>
-                                                        {{ item.file_size }}
+                                                        {{
+                                                            item.file_size
+                                                                | filesize
+                                                        }}
                                                     </td>
                                                     <td>
                                                         <h6 class="mb-0">
@@ -326,7 +355,6 @@
                                                         >
                                                             <a
                                                                 href="#!"
-                                                                class="px-2"
                                                                 id="triggerId1"
                                                                 data-toggle="dropdown"
                                                                 aria-haspopup="true"
@@ -337,7 +365,7 @@
                                                                 ></i>
                                                             </a>
                                                             <div
-                                                                class="dropdown-menu dropdown-menu-left"
+                                                                class="dropdown-menu dropdown-menu-right"
                                                                 aria-labelledby="triggerId1"
                                                             >
                                                                 <div
@@ -569,22 +597,29 @@
                                         field="releases_name"
                                     ></has-error>
                                 </div>
-                                <div class="form-group">
-                                    <label>File</label>
-                                    <VueFileAgent
-                                        :multiple="false"
-                                        :deletable="true"
-                                        :accept="'.ino'"
-                                        :maxSize="'5MB'"
-                                        :helpText="'Choose binary file'"
-                                        :errorText="{
-                                            type:
-                                                'Invalid file type. Only .ino Allowed',
-                                            size:
-                                                'Files should not exceed 5MB in size'
-                                        }"
-                                        v-model="formRelease.file_path"
-                                    ></VueFileAgent>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <form method="post" action="#" id="#">
+                                            <div class="form-group files color">
+                                                <label>Upload Your File </label>
+                                                <input
+                                                    type="file"
+                                                    id="file"
+                                                    ref="file"
+                                                    @change="filesSelected"
+                                                    :class="{
+                                                        'is-invalid': formRelease.errors.has(
+                                                            'file_path'
+                                                        )
+                                                    }"
+                                                />
+                                                <has-error
+                                                    :form="formRelease"
+                                                    field="file_path"
+                                                ></has-error>
+                                            </div>
+                                        </form>
+                                    </div>
                                 </div>
                             </div>
                             <div class="modal-footer">
@@ -630,20 +665,36 @@ export default {
             userProvider: [],
             currentProviderEdit: [],
             releases: [],
+            uploadHeaders: {
+                "X-Requested-With": "XMLHttpRequest",
+                "X-CSRF-TOKEN": document.head.querySelector(
+                    'meta[name="csrf-token"]'
+                ).content
+            },
             editmode: false,
             selected: "",
             form: new Form({
                 id: "",
-                provider_name: ""
+                provider_name: "",
+                releases_current_version: ""
             }),
             formRelease: new Form({
                 provider_key: "",
                 releases_name: "",
-                file_path: []
+                file_path: [],
+                file_size: 0
             })
         };
     },
     computed: {
+        uploadUrl: function() {
+            return (
+                window.location.protocol +
+                "//" +
+                window.location.host +
+                "/api/releasePutFile"
+            );
+        },
         releaseCount: function() {
             return this.releases.length;
         },
@@ -655,6 +706,10 @@ export default {
         }
     },
     methods: {
+        filesSelected() {
+            this.formRelease.file_path = this.$refs.file.files[0];
+            this.formRelease.file_size = this.$refs.file.files[0].size;
+        },
         async loadProvider() {
             this.$Progress.start();
             await axios
@@ -664,16 +719,54 @@ export default {
         },
         async loadRelease() {
             this.$Progress.start();
-            await axios.get("/release").then(response => {
-                this.releases = response.data.data;
-                this.formRelease.provider_key =
-                    this.currentProviderEdit.provider_key || "";
-            });
+            await axios
+                .get("/release/" + this.currentProviderEdit.id)
+                .then(response => {
+                    this.releases = response.data.data;
+                    this.formRelease.provider_key =
+                        this.currentProviderEdit.provider_key || "";
+                });
             await this.loadProvider();
             this.$Progress.finish();
         },
-        setProviderUseThisRelease(item){
-            //do stuff
+        setProviderUseThisRelease(item) {
+            Swal.fire({
+                title: window.translate("Dispatch Release ?"),
+                text:
+                    window.translate(
+                        "You want to set this version to current version on this provider ?"
+                    ) +
+                    ` [${item.releases_name.toUpperCase()}] => [${this.currentProviderEdit.provider_name.toUpperCase()}]`,
+                showCancelButton: true,
+                confirmButtonColor: "#d33",
+                cancelButtonColor: "#3085d6",
+                cancelButtonText: window.translate(
+                    "permission.alert.delete_building_cancel_button_text"
+                ),
+                confirmButtonText: window.translate("Yes, use this version")
+            }).then(result => {
+                // Send request to the server
+                if (result.value) {
+                    this.currentProviderEdit.releases_current_version = item.id;
+                    this.form.fill(this.currentProviderEdit);
+                    this.form
+                        .post(
+                            "/provider/" +
+                                this.currentProviderEdit.id +
+                                "/release"
+                        )
+                        .then(async () => {
+                            Toast.fire({
+                                icon: "success",
+                                title: window.translate("Dispatch new version already.")
+                            });
+                            await this.loadProvider();
+                        })
+                        .catch(data => {
+                            Swal.fire("Failed!", data.message, "warning");
+                        });
+                }
+            });
         },
         goToProviderPanel(item) {
             this.renameCurrentPath(item.provider_key);
@@ -681,7 +774,7 @@ export default {
             this.formRelease.provider_key = item.provider_key;
             this.releases = item.releases;
         },
-        renameCurrentPath(target) {
+        renameCurrentPath(target = "") {
             const urlParams = new URLSearchParams();
             urlParams.set("p", target);
 
@@ -706,17 +799,25 @@ export default {
         async goToProviderPanelWithURL(providerId) {
             if (providerId) {
                 await axios.get(`/provider/${providerId}`).then(response => {
-                    this.currentProviderEdit = response.data.data;
-                    this.releases = response.data.data.releases;
-                    this.formRelease.provider_key =
-                        response.data.data.provider_key;
+                    if (response.data.data) {
+                        this.currentProviderEdit = response.data.data;
+                        this.releases = response.data.data.releases;
+                        this.formRelease.provider_key =
+                            response.data.data.provider_key;
+                    } else {
+                        this.currentProviderEdit = [];
+                        this.releases = [];
+                        this.formRelease.provider_key = "";
+                        this.clearProviderPanel();
+                    }
                 });
             }
         },
         clearProviderPanel() {
-            this.renameCurrentPath("");
+            this.renameCurrentPath();
             this.currentProviderEdit = [];
             this.formRelease.provider_key = "";
+            this.releases = [];
         },
         newModal() {
             this.editmode = false;
@@ -802,15 +903,10 @@ export default {
                     this.form
                         .delete("/provider/" + item.id)
                         .then(async () => {
-                            Swal.fire(
-                                window.translate(
-                                    "permission.alert.comfirm_delete_title"
-                                ),
-                                window.translate(
-                                    "permission.alert.confirm_delete_message"
-                                ),
-                                "success"
-                            );
+                            Toast.fire({
+                                icon: "success",
+                                title: window.translate("permission.alert.confirm_delete_message")
+                            });
                             await this.loadProvider();
                         })
                         .catch(data => {
@@ -824,9 +920,13 @@ export default {
                 title: window.translate(
                     "permission.alert.delete_building_title"
                 ),
-                text:
+                html:
                     window.translate("permission.alert.delete_building_text") +
-                    ` [${item.releases_name.toUpperCase()}]`,
+                    ` [${item.releases_name.toUpperCase()}]` +
+                    (item.id ==
+                    this.currentProviderEdit.releases_current_version
+                        ? "<hr/><span class='text-danger'>This version is in use</span>"
+                        : ""),
                 showCancelButton: true,
                 confirmButtonColor: "#d33",
                 cancelButtonColor: "#3085d6",
@@ -842,19 +942,17 @@ export default {
                     this.formRelease
                         .delete("/release/" + item.id)
                         .then(async () => {
-                            Swal.fire(
-                                window.translate(
-                                    "permission.alert.comfirm_delete_title"
-                                ),
-                                window.translate(
-                                    "permission.alert.confirm_delete_message"
-                                ),
-                                "success"
-                            );
+                            Toast.fire({
+                                icon: "success",
+                                title: window.translate("permission.alert.confirm_delete_message")
+                            });
                             await this.loadRelease();
                         })
                         .catch(data => {
-                            Swal.fire("Failed!", data.message, "warning");
+                            Toast.fire({
+                                icon: "error",
+                                title: data.message
+                            });
                         });
                 }
             });
@@ -881,12 +979,19 @@ export default {
                     });
                 });
         },
-        createItemRelease() {
+        async createItemRelease() {
             if (this.selected == null || this.selected == undefined)
                 return false;
 
-            this.formRelease
-                .post("/release")
+            const headers = { "Content-Type": "multipart/form-data" };
+            let form = new FormData();
+            form.append("provider_key", this.formRelease.provider_key);
+            form.append("releases_name", this.formRelease.releases_name);
+            form.append("file_path", this.formRelease.file_path);
+            form.append("file_size", this.formRelease.file_size);
+
+            axios
+                .post("/release", form, { headers })
                 .then(async response => {
                     $("#addNewRelease").modal("hide");
 
@@ -985,5 +1090,62 @@ $danger: #dc3545;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
     }
+}
+
+.files input {
+    outline: 2px dashed #92b0b3;
+    outline-offset: -10px;
+    -webkit-transition: outline-offset 0.15s ease-in-out,
+        background-color 0.15s linear;
+    transition: outline-offset 0.15s ease-in-out, background-color 0.15s linear;
+    padding: 120px 0px 85px 35%;
+    text-align: center !important;
+    margin: 0;
+    width: 100% !important;
+}
+.files input:focus {
+    outline: 2px dashed #92b0b3;
+    outline-offset: -10px;
+    -webkit-transition: outline-offset 0.15s ease-in-out,
+        background-color 0.15s linear;
+    transition: outline-offset 0.15s ease-in-out, background-color 0.15s linear;
+    border: 1px solid #92b0b3;
+}
+.files {
+    position: relative;
+}
+.files:after {
+    pointer-events: none;
+    position: absolute;
+    top: 60px;
+    left: 0;
+    width: 50px;
+    right: 0;
+    height: 56px;
+    content: "";
+    background-image: url(https://image.flaticon.com/icons/png/128/109/109612.png);
+    display: block;
+    margin: 0 auto;
+    background-size: 100%;
+    background-repeat: no-repeat;
+}
+.color input {
+    background-color: #f1f1f1;
+}
+.files:before {
+    position: absolute;
+    bottom: 10px;
+    left: 0;
+    pointer-events: none;
+    width: 100%;
+    right: 0;
+    height: 57px;
+    content: " or drag it here. ";
+    display: block;
+    margin: 0 auto;
+    color: #2ea591;
+    font-weight: 600;
+    text-transform: capitalize;
+    text-align: center;
 }
 </style>

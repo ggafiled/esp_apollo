@@ -268,7 +268,7 @@ return [
             'text' => 'console_log',
             'url' => '/console-log',
             'icon' => 'mdi mdi-console',
-            'roles' => ["superadministrator", "administrator"],
+            'roles' => ["superadministrator"],
         ],
         ['header' => 'user'],
         [
@@ -281,13 +281,13 @@ return [
             'text' => 'user_role_permission',
             'url' => '/permission',
             'icon' => 'bi bi-layers',
-            'roles' => ['superadministrator', 'administrator'],
+            'roles' => ["superadministrator"],
         ],
         [
             'text' => 'user_management',
             'url' => '/users',
             'icon' => 'bi bi-person',
-            'roles' => ['superadministrator', 'administrator'],
+            'roles' => ["superadministrator"],
         ],
     ],
 

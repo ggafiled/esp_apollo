@@ -22,6 +22,9 @@ class CreateReleasesTable extends Migration
             $table->json('updated_devices')->nullable();
             $table->timestamps();
             $table->softDeletes();
+
+            $table->foreign('provider_id')->references('id')->on('providers')
+                ->onUpdate('cascade')->onDelete('cascade');
         });
     }
 

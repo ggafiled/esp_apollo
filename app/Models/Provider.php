@@ -20,4 +20,9 @@ class Provider extends Model
     {
         return $this->hasMany('App\Models\Release', 'provider_id', 'id');
     }
+
+    public function currentVersion()
+    {
+        return $this->hasOne('App\Models\Release', 'id', 'releases_current_version');
+    }
 }

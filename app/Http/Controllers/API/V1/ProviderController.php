@@ -7,7 +7,9 @@ use App\Models\Release;
 use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 
 class ProviderController extends BaseController
@@ -15,7 +17,7 @@ class ProviderController extends BaseController
 
     public function __construct()
     {
-        $this->middleware('auth:api');
+        // $this->middleware('auth:api');
     }
 
     /**
@@ -26,7 +28,7 @@ class ProviderController extends BaseController
     public function index()
     {
         try {
-            $user_provider = Provider::where('user_id', Auth::id())->orderby('created_at', 'DESC')->with('releases')->withCount('releases')->get();
+            $user_provider = Provider::where('user_id', Auth::id())->orderby('created_at', 'DESC')->with('releases', 'currentVersion')->withCount('releases')->get();
             return $this->sendResponse($user_provider, trans('actions.get.success'));
         } catch (ValidationException $ex) {
             return $this->sendError([], $ex->getMessage());
@@ -44,7 +46,7 @@ class ProviderController extends BaseController
     public function show($id)
     {
         try {
-            $user_provider = Provider::where('user_id', Auth::id())->where('provider_key', $id)->orderby('created_at', 'DESC')->with('releases')->withCount('releases')->first();
+            $user_provider = Provider::where('user_id', Auth::id())->where('provider_key', $id)->orderby('created_at', 'DESC')->with('releases', 'currentVersion')->withCount('releases')->first();
             return $this->sendResponse($user_provider, trans('actions.get.success'));
         } catch (ValidationException $ex) {
             return $this->sendError([], $ex->getMessage());
@@ -73,7 +75,7 @@ class ProviderController extends BaseController
         } catch (ValidationException $ex) {
             return $this->sendError([], $ex->getMessage());
         } catch (Exception $ex) {
-            return $this->sendError($ex, trans('actions.created.failed'));
+            return $this->sendError([], $ex->getMessage());
         }
     }
 
@@ -111,13 +113,63 @@ class ProviderController extends BaseController
     public function destroy($id)
     {
         try {
-            Release::where('provider_id', $id)->delete();
+            $user_provider_release = Release::where('provider_id', $id)->get();
+
+            foreach ($user_provider_release as $item) {
+                if (Storage::disk('s3')->exists($item->file)) {
+                    Storage::disk('s3')->delete($item->file);
+                }
+                $item->delete();
+            }
+
             $user_provider = User::findOrFail(Auth::id())->providers()->findOrFail($id)->delete();
             return $this->sendResponse($user_provider, trans('actions.destroy.success'));
         } catch (ValidationException $ex) {
             return $this->sendError([], $ex->getMessage());
         } catch (Exception $ex) {
             return $this->sendError([], trans('actions.destroy.failed'));
+        }
+    }
+
+    public function setCurrentVersion(Request $request, $id)
+    {
+        try {
+            $user_provider = User::findOrFail(Auth::id())->providers()->findOrFail($id)->update([
+                'releases_current_version' => $request->input('releases_current_version'),
+            ]);
+            return $this->sendResponse($user_provider, trans('actions.updated.success'));
+        } catch (ValidationException $ex) {
+            return $this->sendError([], $ex->getMessage());
+        } catch (Exception $ex) {
+            return $this->sendError([], $ex->getMessage());
+        }
+    }
+
+    public function getCurrentVersion(Request $request, $provider_key)
+    {
+        try {
+            $user_provider = Provider::select('user_id', 'releases_current_version', 'provider_name')->where('provider_key', $provider_key)->with('currentVersion')->first();
+            return $this->sendResponse($user_provider, trans('actions.get.success'));
+        } catch (ValidationException $ex) {
+            return $this->sendError([], $ex->getMessage());
+        } catch (Exception $ex) {
+            return $this->sendError([], trans('actions.get.failed'));
+        }
+    }
+
+    public function getStreamDowload(Request $request, $provider_key)
+    {
+        try {
+            $user_provider = Provider::where('provider_key', $provider_key)->with('currentVersion')->get();
+            // dd($user_provider);
+            if (Storage::disk('s3')->exists($user_provider->currentVersion()->file)) {
+                return Storage::download($user_provider->currentVersion()->file);
+            }
+            return $this->sendResponse($user_provider, trans('actions.get.success'));
+        } catch (ValidationException $ex) {
+            return $this->sendError([], $ex->getMessage());
+        } catch (Exception $ex) {
+            return $this->sendError([], trans('actions.get.failed'));
         }
     }
 

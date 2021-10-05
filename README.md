@@ -1,30 +1,37 @@
 # vue-laravel-starter
+
 ## Tech Specification
-- Laravel 8
-- Vue 2 + VueRouter + vue-progressbar + sweetalert2 + laravel-vue-pagination
-- Schedular Service
-- Laravel Passport
-- Laravel laravolt/avatar
-- Laravel mpociot/teamwork
-- Laravel spatie/laravel-activitylog
-- Laravel santigarcor/laratrust
-- Laravel tohidplus/laravel-vue-translation
-- ThailandAutoComplete
-- Admin LTE 3 + Bootstrap 4 + Font Awesome 5
-- PHPUnit Test Case/Test Coverage
+
+-   Laravel 8
+-   Vue 2 + VueRouter + vue-progressbar + sweetalert2 + laravel-vue-pagination
+-   Schedular Service
+-   Laravel Passport
+-   Laravel laravolt/avatar
+-   Laravel mpociot/teamwork
+-   Laravel spatie/laravel-activitylog
+-   Laravel santigarcor/laratrust
+-   Laravel tohidplus/laravel-vue-translation
+-   ThailandAutoComplete
+-   Admin LTE 3 + Bootstrap 4 + Font Awesome 5
+-   PHPUnit Test Case/Test Coverage
 
 ## Features
-- Modal based Create+Edit, List with Pagination, Delete with Sweetalert
-- Login, Register, Forget+Reset Password as default auth
-- Profile, Update Profile, Change Password
-- User Management
-- Database Backup Schedular & Log activity
-- Frontend and Backend User ACL with Gate Policy (type: admin/user)
-- Simple Static Dashboard
-- Developer Options for OAuth Clients and Personal Access Token
-- Build with Docker
+
+-   Modal based Create+Edit, List with Pagination, Delete with Sweetalert
+-   Login, Register, Forget+Reset Password as default auth
+-   Profile, Update Profile, Change Password
+-   User Management
+-   Database Backup Schedular & Log activity
+-   Frontend and Backend User ACL with Gate Policy (type: admin/user)
+-   Simple Static Dashboard
+-   Developer Options for OAuth Clients and Personal Access Token
+-   Build with Docker
 
 ![Preview](https://raw.githubusercontent.com/ggafiled/vue-laravel-starter/main/public/images/dashboard.png)
+![Preview](https://raw.githubusercontent.com/ggafiled/vue-laravel-starter/main/public/images/dashboard01.png)
+![Preview](https://raw.githubusercontent.com/ggafiled/vue-laravel-starter/main/public/images/dashboard02.png)
+![Preview](https://raw.githubusercontent.com/ggafiled/vue-laravel-starter/main/public/images/dashboard03.png)
+![Preview](https://raw.githubusercontent.com/ggafiled/vue-laravel-starter/main/public/images/dashboard04.png)
 ![Preview](https://raw.githubusercontent.com/ggafiled/vue-laravel-starter/main/public/images/console.png)
 ![Preview](https://raw.githubusercontent.com/ggafiled/vue-laravel-starter/main/public/images/role.png)
 ![Preview](https://raw.githubusercontent.com/ggafiled/vue-laravel-starter/main/public/images/user.png)

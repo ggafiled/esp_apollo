@@ -22,6 +22,11 @@ class CreateProvidersTable extends Migration
             $table->string('provider_name');
             $table->timestamps();
             $table->softDeletes();
+
+            $table->foreign('releases_current_version')->references('id')->on('releases')
+                ->onUpdate('cascade')->onDelete('cascade');
+            $table->foreign('user_id')->references('id')->on('users')
+                ->onUpdate('cascade')->onDelete('cascade');
         });
     }
 

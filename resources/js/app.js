@@ -206,6 +206,29 @@ Vue.filter("yesno", value =>
     '<i class="fas fa-check green"></i>' :
     '<i class="fas fa-times red"></i>'
 );
+
+Vue.filter("filesize", value => {
+    const thresh = 1000;
+    const dp = 1;
+
+    if (Math.abs(value) < thresh) {
+        return value + " B";
+    }
+
+    const units = ["kB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
+    let u = -1;
+    const r = 10 ** dp;
+
+    do {
+        value /= thresh;
+        ++u;
+    } while (
+        Math.round(Math.abs(value) * r) / r >= thresh &&
+        u < units.length - 1
+    );
+
+    return value.toFixed(dp) + " " + units[u];
+});
 // end Filter
 
 const app = new Vue({

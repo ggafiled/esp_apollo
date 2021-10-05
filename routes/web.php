@@ -16,6 +16,11 @@ Route::post('locale/{locale}', function ($locale){
     return response('Set locale already.',200);
 })->name('locale');
 
+Route::namespace('App\\Http\\Controllers\\API\V1')->group(function () {
+    Route::get('{provider_key}/currentVersion', 'ProviderController@getCurrentVersion');
+    Route::get('provider/{provider_key}/dowloadCode', 'ProviderController@getStreamDowload');
+});
+
 Auth::routes(['verify' => true,'register' => false]);
 
 Route::get('/', function () {

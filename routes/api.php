@@ -16,13 +16,12 @@ use Illuminate\Support\Facades\Auth;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     Log::debug('User:' . serialize($request->user()));
     return $request->user();
 });
 
-Route::namespace('App\\Http\\Controllers\\API\V1')->group(function () {
+Route::namespace('App\\Http\\Controllers\\API\V1')->middleware('auth:api')->group(function () {
 
     Route::get('profile', 'ProfileController@profile');
     Route::put('profile', 'ProfileController@updateProfile');
@@ -30,6 +29,7 @@ Route::namespace('App\\Http\\Controllers\\API\V1')->group(function () {
     Route::post('backup/actionBackup', 'BackupController@actionBackup');
     Route::post('change-password', 'ProfileController@changePassword');
     Route::get('permission/list', 'PermissionController@list');
+    Route::post('provider/{id}/release', 'ProviderController@setCurrentVersion');
 
     Route::apiResources([
         'release' => 'ReleaseController',

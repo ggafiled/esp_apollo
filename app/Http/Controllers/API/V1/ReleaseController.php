@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers\API\V1;
 
-use Exception;
 use App\Models\Provider;
 use App\Models\Release;
 use App\Models\User;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
 class ReleaseController extends BaseController
@@ -45,7 +47,8 @@ class ReleaseController extends BaseController
     public function show($id)
     {
         try {
-            return $this->sendResponse([], trans('actions.get.success'));
+            $user_provider_release = Release::where('provider_id', $id)->get();
+            return $this->sendResponse($user_provider_release, trans('actions.get.success'));
         } catch (ValidationException $ex) {
             return $this->sendError([], $ex->getMessage());
         } catch (Exception $ex) {
@@ -66,20 +69,19 @@ class ReleaseController extends BaseController
     {
 
         try {
-            $user_provider = Provider::where('user_id', '=', Auth::id())->where('provider_key', '=', $request->input('provider_key'))->first();
+            $user_provider = Provider::where('user_id', Auth::id())->where('provider_key', $request->input('provider_key'))->first();
             $user_provider_release = Release::create([
                 'provider_id' => $user_provider->id,
                 'releases_name' => $request->input('releases_name'),
-                'file' => $request->input('file') || "",
-                'file_size' => $request->input('file_size') || "",
-
+                'file' => Storage::disk('s3')->put($user_provider->provider_key, $request->file('file_path')),
+                'file_size' => $request->input('file_size'),
             ]);
 
             return $this->sendResponse($user_provider_release, trans('actions.created.success'));
         } catch (ValidationException $ex) {
             return $this->sendError([], $ex->getMessage());
         } catch (Exception $ex) {
-            return $this->sendError([], $ex->getMessage());
+            return $this->sendError([], trans('actions.created.failed'));
         }
     }
 
@@ -114,12 +116,26 @@ class ReleaseController extends BaseController
     public function destroy($id)
     {
         try {
-            $user_provider_release = Release::findOrFail($id)->delete();
+            $user_provider_release = Release::findOrFail($id)->first();
+            $provider_current_version = Provider::where('id', $user_provider_release->provider_id)->first();
+
+            if (Storage::disk('s3')->exists($user_provider_release->file)) {
+                Storage::disk('s3')->delete($user_provider_release->file);
+            }
+
+            if ($user_provider_release->id == $provider_current_version->releases_current_version) {
+                $provider_current_version->update([
+                    'releases_current_version' => null,
+                ]);
+            }
+
+            $user_provider_release->delete();
+
             return $this->sendResponse($user_provider_release, trans('actions.destroy.success'));
         } catch (ValidationException $ex) {
             return $this->sendError([], $ex->getMessage());
         } catch (Exception $ex) {
-            return $this->sendError([], $ex->getMessage());
+            return $this->sendError([], trans('actions.destroy.failed'));
         }
     }
 
