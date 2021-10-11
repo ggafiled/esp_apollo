@@ -7,8 +7,8 @@ use App\Models\Release;
 use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 
@@ -149,7 +149,10 @@ class ProviderController extends BaseController
     {
         try {
             $user_provider = Provider::select('user_id', 'releases_current_version', 'provider_name')->where('provider_key', $provider_key)->with('currentVersion')->first();
-            return $this->sendResponse($user_provider, trans('actions.get.success'));
+            if ($user_provider->currentVersion) {
+                return $this->sendResponse($user_provider, trans('actions.get.success'));
+            }
+            return $this->sendError([], trans('actions.get.success'));
         } catch (ValidationException $ex) {
             return $this->sendError([], $ex->getMessage());
         } catch (Exception $ex) {
@@ -160,12 +163,17 @@ class ProviderController extends BaseController
     public function getStreamDowload(Request $request, $provider_key)
     {
         try {
-            $user_provider = Provider::where('provider_key', $provider_key)->with('currentVersion')->get();
-            // dd($user_provider);
-            if (Storage::disk('s3')->exists($user_provider->currentVersion()->file)) {
-                return Storage::download($user_provider->currentVersion()->file);
+            $user_provider = Provider::where('provider_key', $provider_key)->with('currentVersion')->first();
+            // dd($user_provider->currentVersion);
+            if ($user_provider->currentVersion && Storage::disk('s3')->exists($user_provider->currentVersion->file) && $user_provider) {
+                $headers = array(
+                    'Content-Type: application/octet-stream',
+                    'Content-Disposition: attachment; filename="' . $user_provider->currentVersion->file . '"',
+                );
+                // return Storage::download($user_provider->currentVersion()->file, 'filename.pdf', $headers);
+                return Response::make(Storage::disk('s3')->get($user_provider->currentVersion->file), 200, $headers);
             }
-            return $this->sendResponse($user_provider, trans('actions.get.success'));
+            return $this->sendError([], "This provider key dosen't exist release version.");
         } catch (ValidationException $ex) {
             return $this->sendError([], $ex->getMessage());
         } catch (Exception $ex) {

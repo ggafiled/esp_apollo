@@ -476,11 +476,7 @@
                             </button>
                         </div>
 
-                        <form
-                            @submit.prevent="
-                                editmode ? updateItem() : createItem()
-                            "
-                        >
+                        <form>
                             <div class="modal-body">
                                 <div class="form-group">
                                     <label>Name</label>
@@ -513,14 +509,36 @@
                                     v-show="editmode"
                                     type="submit"
                                     class="btn btn-success"
+                                    :class="{
+                                        'disabled': onprogress
+                                    }"
+                                    :disabled="onprogress"
+                                    @click.prevent="updateItem()"
                                 >
+                                    <span
+                                        v-show="onprogress"
+                                        class="spinner-border spinner-border-sm"
+                                        role="status"
+                                        aria-hidden="true"
+                                    ></span>
                                     {{ translate("user.actions.update") }}
                                 </button>
                                 <button
                                     v-show="!editmode"
                                     type="submit"
                                     class="btn btn-primary"
+                                    :class="{
+                                        'disabled': onprogress
+                                    }"
+                                    :disabled="onprogress"
+                                    @click.prevent="createItem()"
                                 >
+                                    <span
+                                        v-show="onprogress"
+                                        class="spinner-border spinner-border-sm"
+                                        role="status"
+                                        aria-hidden="true"
+                                    ></span>
                                     {{ translate("user.actions.create") }}
                                 </button>
                             </div>
@@ -570,13 +588,7 @@
                             </button>
                         </div>
 
-                        <form
-                            @submit.prevent="
-                                editmode
-                                    ? updateItemRelease()
-                                    : createItemRelease()
-                            "
-                        >
+                        <form>
                             <div class="modal-body">
                                 <div class="form-group">
                                     <label>Release Name</label>
@@ -634,14 +646,36 @@
                                     v-show="editmode"
                                     type="submit"
                                     class="btn btn-success"
+                                    :class="{
+                                        'disabled': onprogress
+                                    }"
+                                    :disabled="onprogress"
+                                    @click.prevent="updateItemRelease()"
                                 >
+                                    <span
+                                        v-show="onprogress"
+                                        class="spinner-border spinner-border-sm"
+                                        role="status"
+                                        aria-hidden="true"
+                                    ></span>
                                     {{ translate("user.actions.update") }}
                                 </button>
                                 <button
                                     v-show="!editmode"
                                     type="submit"
                                     class="btn btn-primary"
+                                    :class="{
+                                        'disabled': onprogress
+                                    }"
+                                    :disabled="onprogress"
+                                    @click.prevent="createItemRelease()"
                                 >
+                                    <span
+                                        v-show="onprogress"
+                                        class="spinner-border spinner-border-sm"
+                                        role="status"
+                                        aria-hidden="true"
+                                    ></span>
                                     {{ translate("user.actions.create") }}
                                 </button>
                             </div>
@@ -672,6 +706,7 @@ export default {
                 ).content
             },
             editmode: false,
+            onprogress: false,
             selected: "",
             form: new Form({
                 id: "",
@@ -758,7 +793,9 @@ export default {
                         .then(async () => {
                             Toast.fire({
                                 icon: "success",
-                                title: window.translate("Dispatch new version already.")
+                                title: window.translate(
+                                    "Dispatch new version already."
+                                )
                             });
                             await this.loadProvider();
                         })
@@ -821,20 +858,24 @@ export default {
         },
         newModal() {
             this.editmode = false;
+            this.onprogress = false;
             this.selected = "";
             this.form.reset();
             $("#addNew").modal("show");
         },
         newModalRelease() {
             this.editmode = false;
+            this.onprogress = false;
             this.selected = "";
             this.formRelease.reset();
+            this.formRelease.file_path = [];
             this.formRelease.provider_key =
                 this.currentProviderEdit.provider_key || "";
             $("#addNewRelease").modal("show");
         },
         updateItem() {
             this.$Progress.start();
+            this.onprogress = true;
             this.form
                 .put("/provider/" + this.form.id)
                 .then(async response => {
@@ -845,13 +886,20 @@ export default {
                         title: response.data.message
                     });
                     await this.loadProvider();
+                    setTimeout(() => {
+                        this.onprogress = false;
+                    }, 2000);
                 })
                 .catch(() => {
                     this.$Progress.fail();
+                    setTimeout(() => {
+                        this.onprogress = false;
+                    }, 2000);
                 });
         },
         updateItemRelease() {
             this.$Progress.start();
+            this.onprogress = true;
             this.formRelease
                 .put("/release/" + this.form.id)
                 .then(async response => {
@@ -862,9 +910,15 @@ export default {
                         title: response.data.message
                     });
                     await this.loadRelease();
+                    setTimeout(() => {
+                        this.onprogress = false;
+                    }, 2000);
                 })
                 .catch(() => {
                     this.$Progress.fail();
+                    setTimeout(() => {
+                        this.onprogress = false;
+                    }, 2000);
                 });
         },
         editModal(item) {
@@ -900,22 +954,32 @@ export default {
             }).then(result => {
                 // Send request to the server
                 if (result.value) {
+                    LoadingWait.fire();
                     this.form
                         .delete("/provider/" + item.id)
                         .then(async () => {
                             Toast.fire({
                                 icon: "success",
-                                title: window.translate("permission.alert.confirm_delete_message")
+                                title: window.translate(
+                                    "permission.alert.confirm_delete_message"
+                                )
                             });
                             await this.loadProvider();
+                            setTimeout(() => {
+                                LoadingWait.close();
+                            },1000);
                         })
                         .catch(data => {
                             Swal.fire("Failed!", data.message, "warning");
+                            setTimeout(() => {
+                                LoadingWait.close();
+                            },1000);
                         });
                 }
             });
         },
         deleteItemRelease(item) {
+            console.log(item)
             Swal.fire({
                 title: window.translate(
                     "permission.alert.delete_building_title"
@@ -939,20 +1003,29 @@ export default {
             }).then(result => {
                 // Send request to the server
                 if (result.value) {
+                    LoadingWait.fire();
                     this.formRelease
                         .delete("/release/" + item.id)
                         .then(async () => {
                             Toast.fire({
                                 icon: "success",
-                                title: window.translate("permission.alert.confirm_delete_message")
+                                title: window.translate(
+                                    "permission.alert.confirm_delete_message"
+                                )
                             });
                             await this.loadRelease();
+                            setTimeout(() => {
+                                LoadingWait.close();
+                            },1000);
                         })
                         .catch(data => {
                             Toast.fire({
                                 icon: "error",
                                 title: data.message
                             });
+                            setTimeout(() => {
+                                LoadingWait.close();
+                            },1000);
                         });
                 }
             });
@@ -960,6 +1033,7 @@ export default {
         createItem() {
             if (this.selected == null || this.selected == undefined)
                 return false;
+            this.onprogress = true;
             this.form
                 .post("/provider")
                 .then(async response => {
@@ -971,17 +1045,24 @@ export default {
                     });
 
                     await this.loadProvider();
+                    setTimeout(() => {
+                        this.onprogress = false;
+                    }, 2000);
                 })
                 .catch(() => {
                     Toast.fire({
                         icon: "error",
                         title: "Some error occured! Please try again"
                     });
+                    setTimeout(() => {
+                        this.onprogress = false;
+                    }, 2000);
                 });
         },
         async createItemRelease() {
             if (this.selected == null || this.selected == undefined)
                 return false;
+            this.onprogress = true;
 
             const headers = { "Content-Type": "multipart/form-data" };
             let form = new FormData();
@@ -1001,12 +1082,18 @@ export default {
                     });
 
                     await this.loadRelease();
+                    setTimeout(() => {
+                        this.onprogress = false;
+                    }, 2000);
                 })
                 .catch(() => {
                     Toast.fire({
                         icon: "error",
                         title: "Some error occured! Please try again"
                     });
+                    setTimeout(() => {
+                        this.onprogress = false;
+                    }, 2000);
                 });
         }
     },
