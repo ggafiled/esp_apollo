@@ -102,27 +102,31 @@ class ReleaseController extends BaseController
     public function update(Request $request, $id)
     {
 
-        // try {
-        //     $user_provider = Provider::where('user_id', Auth::id())->where('provider_key', $request->input('provider_key'))->first();
-        //     $asset_name = Str::uuid() . '.' . $request->file('file_path')->getClientOriginalExtension();
-        //     $user_provider_release = Release::create([
-        //         'provider_id' => $user_provider->id,
-        //         'releases_name' => $request->input('releases_name'),
-        //         'file' => $request->file('file_path')->storeAs(
-        //             $user_provider->provider_key, #$path
-        //              $asset_name, #$fileName
-        //             ['disk' => 's3']#$options
-        //         ),
-        //         // 'file' => Storage::disk('s3')->put($user_provider->provider_key . '/' . $asset_name, $request->file('file_path')),
-        //         'file_size' => $request->input('file_size'),
-        //     ]);
+        try {
+            // dd($request->all());
+            $asset_name = Str::uuid() . '.' . $request->file('file_path')->getClientOriginalExtension();
+            $user_provider_release = Release::where('id', $id)->first();
 
-        //     return $this->sendResponse($user_provider_release, trans('actions.created.success'));
-        // } catch (ValidationException $ex) {
-        //     return $this->sendError([], $ex->getMessage());
-        // } catch (Exception $ex) {
-        //     return $this->sendError([], trans('actions.created.failed'));
-        // }
+            if (Storage::disk('s3')->exists($user_provider_release->file)) {
+                Storage::disk('s3')->delete($user_provider_release->file);
+            }
+
+            $user_provider_release->update([
+                'releases_name' => $request->input('releases_name'),
+                'file' => $request->file('file_path')->storeAs(
+                     $asset_name, #$fileName
+                    ['disk' => 's3']#$options
+                ),
+                // 'file' => Storage::disk('s3')->put($user_provider->provider_key . '/' . $asset_name, $request->file('file_path')),
+                'file_size' => $request->input('file_size'),
+            ]);
+
+            return $this->sendResponse($user_provider_release, trans('actions.created.success'));
+        } catch (ValidationException $ex) {
+            return $this->sendError([], $ex->getMessage());
+        } catch (Exception $ex) {
+            return $this->sendError([], $ex->getMessage());
+        }
     }
 
     /**

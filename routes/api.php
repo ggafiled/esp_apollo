@@ -30,6 +30,7 @@ Route::namespace('App\\Http\\Controllers\\API\V1')->middleware('auth:api')->grou
     Route::post('change-password', 'ProfileController@changePassword');
     Route::get('permission/list', 'PermissionController@list');
     Route::post('provider/{id}/release', 'ProviderController@setCurrentVersion');
+    Route::post('release/{id}', 'ReleaseController@update');
 
     Route::apiResources([
         'release' => 'ReleaseController',

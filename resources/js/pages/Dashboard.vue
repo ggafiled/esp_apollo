@@ -369,6 +369,7 @@
                                                                 aria-labelledby="triggerId1"
                                                             >
                                                                 <div
+                                                                    v-show="item.id != currentProviderEdit.releases_current_version"
                                                                     class="dropdown-item cursor"
                                                                     @click="
                                                                         setProviderUseThisRelease(
@@ -714,6 +715,7 @@ export default {
                 releases_current_version: ""
             }),
             formRelease: new Form({
+                id: "",
                 provider_key: "",
                 releases_name: "",
                 file_path: [],
@@ -900,8 +902,15 @@ export default {
         updateItemRelease() {
             this.$Progress.start();
             this.onprogress = true;
-            this.formRelease
-                .put("/release/" + this.form.id)
+
+            const headers = { "Content-Type": "multipart/form-data" };
+            let form = new FormData();
+            form.append("releases_name", this.formRelease.releases_name);
+            form.append("file_path", this.formRelease.file_path);
+            form.append("file_size", this.formRelease.file_size);
+
+
+            axios.post("/release/" + this.formRelease.id, form, { headers })
                 .then(async response => {
                     // success
                     $("#addNewRelease").modal("hide");
@@ -916,6 +925,10 @@ export default {
                 })
                 .catch(() => {
                     this.$Progress.fail();
+                    Toast.fire({
+                        icon: "error",
+                        title: "Some error occured! Please try again"
+                    });
                     setTimeout(() => {
                         this.onprogress = false;
                     }, 2000);
