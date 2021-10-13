@@ -27,6 +27,10 @@
 -   Developer Options for OAuth Clients and Personal Access Token
 -   Build with Docker
 
+## API 
+- http://localhost:8000/<PROVIDER_KEY>/currentVersion สำหรับให้อุปกรณ์ตรวจสอบเวอร์ชันการใช้งานล่าสุด
+- http://localhost:8000/provider/<PROVIDER_KEY>/dowloadCode ลิงค์ URL for Streaming dowload ไฟล์ซอร์ดโค้ด
+
 ![Preview](https://raw.githubusercontent.com/ggafiled/esp_apollo/main/public/images/dashboard.png)
 ![Preview](https://raw.githubusercontent.com/ggafiled/esp_apollo/main/public/images/dashboard01.PNG)
 ![Preview](https://raw.githubusercontent.com/ggafiled/esp_apollo/main/public/images/dashboard02.PNG)
